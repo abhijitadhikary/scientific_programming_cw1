@@ -45,6 +45,20 @@ class PiecewiseLinearFunction:
     def __iter__(self):
         return self.inputs.items().__iter__()
 
+    def get_linear_interpolation(self, coord):
+        closest_1 = sorted(self.inputs.keys(),
+                           key=lambda c: abs(c - coord))[0]
+        closest_2 = sorted(self.inputs.keys(),
+                           key=lambda c: abs(c - coord))[1]
+
+        A = closest_1 if closest_1 <= closest_2 else closest_2
+        B = closest_2 if A == closest_1 else closest_1
+
+        ratio = (coord - A) / (B - A)
+        C_value = (self.inputs[A] * (1 - ratio)) + (self.inputs[B] * ratio)
+
+        return C_value
+
     def interp(self, coord):
         """
         Interpolate the value at any coordinate using linear interpolation
@@ -62,6 +76,9 @@ class PiecewiseLinearFunction:
             closest = sorted(self.inputs.keys(),
                              key=lambda c: abs(c - coord))[0]
             return self.inputs[closest]
+        elif self.interpolation == 'linear':
+            C_value = self.get_linear_interpolation(coord)
+            return C_value
         else:
             raise NotImplementedError('Interpolation for non nearest '
                                       'neighbour interpolation has not been '
@@ -82,6 +99,9 @@ class PiecewiseLinearFunction:
             else:
                 raise RuntimeError('The interpolation method should be'
                                    'called instead')
+        elif self.interpolation == 'linear':
+            C_value = self.get_linear_interpolation(coord)
+            return C_value
         else:
             raise NotImplementedError('Extrapolation for non nearest '
                                       'neighbour extrapolation has not been '
