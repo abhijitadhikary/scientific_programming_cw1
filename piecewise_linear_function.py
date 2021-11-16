@@ -176,7 +176,7 @@ class PiecewiseLinearFunction:
             else:
                 raise RuntimeError('The interpolation method should be'
                                    'called instead')
-        elif self.interpolation == 'linear':
+        elif self.extrapolation == 'linear':
             return self.get_linear_interpolation(coord)
         else:
             raise NotImplementedError('Extrapolation for non nearest '

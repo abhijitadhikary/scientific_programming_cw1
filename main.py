@@ -2,15 +2,17 @@ import matplotlib.pyplot as plt
 import random
 from piecewise_linear_function import PiecewiseLinearFunction
 
-fct1 = PiecewiseLinearFunction(zip(
-    (random.sample(range(-1000, 1000), 10)),
-    (random.uniform(-100, 100) for i in range(10))
-))
-fct2 = PiecewiseLinearFunction(rand_num_values=10)
+# fct1 = PiecewiseLinearFunction(zip(
+#     (random.sample(range(-1000, 1000), 10)),
+#     (random.uniform(-100, 100) for i in range(10))
+# ))
+# fct2 = PiecewiseLinearFunction(rand_num_values=10)
+#
+# fct1 += 2
 
-fct1 += 2
+fct1 = PiecewiseLinearFunction({2: 6, 4: 10}, extrapolation='linear')
 
-
+extrapolated_value = fct1.extrap(6)
 
 # PiecewiseLinearFunction(values=((1, 1), (1, 2)))
 

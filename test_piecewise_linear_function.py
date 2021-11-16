@@ -82,9 +82,9 @@ class PiecewiseLinearFunctionInitTest(unittest.TestCase):
         '''
         Tests += where the second object is an int
         '''
-        float_list = [-100, -5, 0, 5, 15000]
+        int_list = [-100, -5, 0, 5, 15000]
         fct1 = PiecewiseLinearFunction(rand_num_values=10)
-        for fct2 in float_list:
+        for fct2 in int_list:
             fct3 = fct1 + fct2
             fct1 += fct2
             assert fct3.inputs == fct1.inputs, f'Implementaiton error of += for int ({fct2})'
@@ -102,17 +102,62 @@ class PiecewiseLinearFunctionInitTest(unittest.TestCase):
             fct1 += fct2
             assert fct3.inputs == fct1.inputs, f'Implementaiton error of += for float ({fct2})'
 
-    def test_plus_equal_for_string(self):
+    def test_plus_equal_for_other(self):
         '''
-        Tests += where the second object is a string
+        Tests += where the second object is other than numeric or PieceWiseLinear object
         '''
+        test_cases = ['c', None, {}, [], ()]
         fct1 = PiecewiseLinearFunction(rand_num_values=10)
-        fct2 = 'c'
+        for fct2 in test_cases:
+            with self.assertRaises(TypeError):
+                fct3 = fct1 + fct2
 
-        with self.assertRaises(TypeError):
-            fct3 = fct1 + fct2
+    def test_linear_interpolation(self):
+        '''
+        The midpoint between the key, value pairs {2: 6, 4: 10} shold be 8
+        '''
+        fct1 = PiecewiseLinearFunction({2: 6, 4: 10}, interpolation='linear')
 
+        interpolated_value = fct1.interp(3)
+        assert interpolated_value == 8, 'Middle Value'
 
+    def test_linear_interpolation_edge(self):
+        '''
+        The a point which coincides which the nearest points, should return the exact value
+        '''
+        fct1 = PiecewiseLinearFunction({2: 6, 4: 10}, interpolation='linear')
+
+        interpolated_value = fct1.interp(2)
+        assert interpolated_value == 6, 'Middle Value'
+
+        interpolated_value = fct1.interp(4)
+        assert interpolated_value == 10, 'Middle Value'
+
+    def test_linear_extrapolation(self):
+        '''
+        The point equally distant from the nearest two coordinates, should have linearly
+        increasing/decreasing value
+        '''
+        fct1 = PiecewiseLinearFunction({2: 6, 4: 10}, extrapolation='linear')
+
+        extrapolated_value = fct1.extrap(6)
+        assert extrapolated_value == 14, 'Middle Value'
+
+        extrapolated_value = fct1.extrap(0)
+        assert extrapolated_value == 2, 'Middle Value'
+
+    def test_linear_extrapolation_edge(self):
+        '''
+        The a point which coincides which the nearest points, should return the exact value
+        '''
+        fct1 = PiecewiseLinearFunction({2: 6, 4: 10}, extrapolation='linear')
+
+        extrapolated_value = fct1.extrap(2)
+        print('\n\n\n\n\n\n{}')
+        assert extrapolated_value == 6, 'Middle Value'
+
+        extrapolated_value = fct1.extrap(4)
+        assert extrapolated_value == 10, 'Middle Value'
 
 
 if __name__ == '__main__':
