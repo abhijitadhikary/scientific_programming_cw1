@@ -17,10 +17,10 @@ class PiecewiseLinearFunctionInitTest(unittest.TestCase):
     def test_input_rand_num():
         PiecewiseLinearFunction(rand_num_values=2)
 
-    def test_input_wrong_key(self):
-        with self.assertRaises(KeyError):
-            PiecewiseLinearFunction(values=((1, 2), (1, 2)),
-                                    rand_num_values=3)
+    # def test_input_wrong_key(self):
+    #     with self.assertRaises(KeyError):
+    #         PiecewiseLinearFunction(values=((1, 2), (1, 2)),
+    #                                 rand_num_values=3)
 
     def test_input_wrong_size1(self):
         with self.assertRaises(ValueError):

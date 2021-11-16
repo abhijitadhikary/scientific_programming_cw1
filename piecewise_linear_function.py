@@ -15,16 +15,100 @@ class PiecewiseLinearFunction:
                  rand_num_values=None,
                  interpolation=INTERPOLATIONTYPE[0],
                  extrapolation=EXTRAPOLATIONTYPE[0]):
+        self.test_input_wrong_type1(values)
+
+        self.check_duplicate_keys(values)
+        self.test_input_wrong_type2(rand_num_values)
+
+        # self.check_wrong_key(values, rand_num_values)
+
+
+
         self.inputs = dict()
         if values is not None:
             self.inputs = dict(values)
         self.interpolation = interpolation
         self.extrapolation = extrapolation
+        self.sanitize_string_inputs()
         if rand_num_values is not None and isinstance(rand_num_values, int):
             self.inputs = dict(zip(
                 random.sample(range(-1000, 1000), rand_num_values),
                 random.sample(range(-100, 100), rand_num_values)))
+
         self._update_params()
+
+    def is_numeric(self, value):
+        '''
+        Tests whether a supplied value is numeric
+        '''
+        return True if isinstance(value, int) or isinstance(value, float) else False
+
+
+    def test_input_wrong_type1(self, values):
+        '''
+        Makes sure all supplied values are numerical
+        '''
+        if not values is None:
+            for key, value in values:
+                if not (self.is_numeric(key) and self.is_numeric(value)):
+                    raise TypeError('All key and values should be numeric')
+
+    def test_input_wrong_type2(self, rand_num_values):
+        '''
+        Makes sure rand_num_values is an integer
+        '''
+        if not rand_num_values is None:
+            if not isinstance(rand_num_values, int):
+                raise TypeError(f'rand_num_values should be an integer')
+
+
+
+
+
+    def check_duplicate_keys(self, values):
+        '''
+        Checks whether there are duplicate keys in the supplied values
+        raises ValueError if present
+        '''
+
+        if not values is None:
+            key_list = []
+            for key, _ in values:
+                if key in key_list:
+                    raise ValueError('Duplicate Keys Supplied (ValueError)')
+                else:
+                    key_list.append(key)
+
+    # def check_wrong_key(self, values, rand_num_values):
+    #     '''
+    #     Checks whether the number of elements in  values is equal to
+    #     rand_num_values
+    #     '''
+    #     if not values is None:
+    #         if not (len(values) == rand_num_values):
+    #             raise KeyError(f'The number of elements in values ({len(values)})'
+    #                            f' and rand_num_values ({rand_num_values}) are not equal')
+
+
+    # def check_wrong_key(self, values, rand_num_values):
+    #     '''
+    #     Raises key error if both values and rand_num_values are supplued at the
+    #     same time, or if neither is supplied
+    #     '''
+    #     if not ((values is None) and (rand_num_values is None)):
+    #         raise KeyError('Both values and rand_num_values supplied at the same time')
+    #
+    #     if (values is None) and (rand_num_values is None):
+    #         raise KeyError('None of values and rand_num_values supplied')
+
+    def sanitize_string_inputs(self):
+        if not self.interpolation in INTERPOLATIONTYPE:
+            raise ValueError(f'Incorrect interpolation type: `{self.interpolation}`')
+
+        if not self.extrapolation in EXTRAPOLATIONTYPE:
+            raise ValueError(f'Incorrect extrapolation type: `{self.extrapolation}`')
+
+
 
     def _update_params(self):
         self.num = len(self.inputs)
@@ -46,14 +130,20 @@ class PiecewiseLinearFunction:
         return self.inputs.items().__iter__()
 
     def get_linear_interpolation(self, coord):
-        closest_1 = sorted(self.inputs.keys(),
-                           key=lambda c: abs(c - coord))[0]
-        closest_2 = sorted(self.inputs.keys(),
-                           key=lambda c: abs(c - coord))[1]
+        '''
+        Returns the interpolated value corresponding to the nearest two
+        points of the supplied coordinate.
+        '''
 
+        # obtain the 2 closest coordinates of the input coord
+        closest_1, closest_2 = sorted(self.inputs.keys(),
+                                      key=lambda c: abs(c - coord))[:2]
+
+        # extract and assign the corresponding values to A and B
         A = closest_1 if closest_1 <= closest_2 else closest_2
         B = closest_2 if A == closest_1 else closest_1
 
+        # calculate the interpolated value based on the ratio
         ratio = (coord - A) / (B - A)
         C_value = (self.inputs[A] * (1 - ratio)) + (self.inputs[B] * ratio)
 
@@ -77,8 +167,7 @@ class PiecewiseLinearFunction:
                              key=lambda c: abs(c - coord))[0]
             return self.inputs[closest]
         elif self.interpolation == 'linear':
-            C_value = self.get_linear_interpolation(coord)
-            return C_value
+            return self.get_linear_interpolation(coord)
         else:
             raise NotImplementedError('Interpolation for non nearest '
                                       'neighbour interpolation has not been '
@@ -100,8 +189,7 @@ class PiecewiseLinearFunction:
                 raise RuntimeError('The interpolation method should be'
                                    'called instead')
         elif self.interpolation == 'linear':
-            C_value = self.get_linear_interpolation(coord)
-            return C_value
+            return self.get_linear_interpolation(coord)
         else:
             raise NotImplementedError('Extrapolation for non nearest '
                                       'neighbour extrapolation has not been '
@@ -163,6 +251,30 @@ class PiecewiseLinearFunction:
         else:
             raise TypeError('Unsupported data type')
         return PiecewiseLinearFunction(new_values)
+
+    # def __iadd__(self, other):
+    #     """
+    #     Define the addition operator for two objects of type
+    #      PiecewiseLinearFunction or one PiecewiseLinearFunction and a real
+    #      number using ++=
+    #     :param other: right-hand side argument
+    #     :return: A PiecewiseLinearFunction object
+    #     """
+    #     new_values = dict()
+    #     # Add two functions
+    #     if isinstance(other, PiecewiseLinearFunction):
+    #         for c, v in self.inputs.items():
+    #             new_values[c] = v + other.interp(c)
+    #         for c2, v2 in other:
+    #             if c2 not in new_values.keys():
+    #                 new_values[c2] = self.interp(c2) + v2
+    #     # Add a constant to the left-hand side operand
+    #     elif isinstance(other, (int, float)):
+    #         for c, v in self.inputs.items():
+    #             new_values[c] = v + other
+    #     else:
+    #         raise TypeError('Unsupported data type')
+    #     return PiecewiseLinearFunction(new_values)
 
     def get_lists_sorted_by_coord(self):
         """
