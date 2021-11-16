@@ -2,17 +2,17 @@ import matplotlib.pyplot as plt
 import random
 from piecewise_linear_function import PiecewiseLinearFunction
 
-# fct1 = PiecewiseLinearFunction(zip(
-#     (random.sample(range(-1000, 1000), 10)),
-#     (random.uniform(-100, 100) for i in range(10))
-# ))
-# fct2 = PiecewiseLinearFunction(rand_num_values=10)
-#
-# fct3 = fct1 + fct2
+fct1 = PiecewiseLinearFunction(zip(
+    (random.sample(range(-1000, 1000), 10)),
+    (random.uniform(-100, 100) for i in range(10))
+))
+fct2 = PiecewiseLinearFunction(rand_num_values=10)
+
+fct3 = fct1 + fct2
 
 
 
-
+# PiecewiseLinearFunction(values=((1, 1), (1, 2)))
 
 
 
@@ -30,7 +30,7 @@ from piecewise_linear_function import PiecewiseLinearFunction
 # fct4.interp(55)
 
 
-PiecewiseLinearFunction(values=zip((1, 1), (1, 2)))
+# PiecewiseLinearFunction(rand_num_values=2)
 
 
 # PiecewiseLinearFunction(values=((1, 2), (2, 2)),

@@ -15,14 +15,18 @@ class PiecewiseLinearFunction:
                  rand_num_values=None,
                  interpolation=INTERPOLATIONTYPE[0],
                  extrapolation=EXTRAPOLATIONTYPE[0]):
-        self.test_input_wrong_type1(values)
 
-        self.check_duplicate_keys(values)
+        if not values is None:
+            # convert the zip object to a list, unless a dict object is supplued
+            if isinstance(values, dict):
+                value_list = [(key, value) for key, value in values.items()]
+            else:
+                value_list = list(values)
+                values = {key: value for key, value in value_list}
+            self.test_input_wrong_type1(value_list)
+            self.check_duplicate_keys(value_list)
+            self.check_wrong_key(value_list)
         self.test_input_wrong_type2(rand_num_values)
-
-        # self.check_wrong_key(values, rand_num_values)
-
-
 
         self.inputs = dict()
         if values is not None:
@@ -48,10 +52,9 @@ class PiecewiseLinearFunction:
         '''
         Makes sure all supplied values are numerical
         '''
-        if not values is None:
-            for key, value in values:
-                if not (self.is_numeric(key) and self.is_numeric(value)):
-                    raise TypeError('All key and values should be numeric')
+        for key, value in values:
+            if not (self.is_numeric(key) and self.is_numeric(value)):
+                raise TypeError('All key and values should be numeric')
 
     def test_input_wrong_type2(self, rand_num_values):
         '''
@@ -70,36 +73,39 @@ class PiecewiseLinearFunction:
         Checks whether there are duplicate keys in the supplied values
         raises ValueError if present
         '''
+        key_list = []
+        for key, _ in values:
+            if key in key_list:
+                raise ValueError('Duplicate Keys Supplied (ValueError)')
+            else:
+                key_list.append(key)
 
-        if not values is None:
-            key_list = []
-            for key, _ in values:
-                if key in key_list:
-                    raise ValueError('Duplicate Keys Supplied (ValueError)')
-                else:
-                    key_list.append(key)
+    def check_wrong_key(self, values):
+        '''
+        Checks whether the number of elements in  values is equal to
+        rand_num_values
+        '''
 
-    # def check_wrong_key(self, values, rand_num_values):
-    #     '''
-    #     Checks whether the number of elements in  values is equal to
-    #     rand_num_values
-    #     '''
-    #     if not values is None:
-    #         if not (len(values) == rand_num_values):
-    #             raise KeyError(f'The number of elements in values ({len(values)})'
-    #                            f' and rand_num_values ({rand_num_values}) are not equal')
+        key_list = []
+        for key, _ in values:
+            if key in key_list:
+                raise KeyError('Duplicate Keys Supplied (ValueError)')
+            else:
+                key_list.append(key)
+
+        # key_val_list = []
+        # for key_val in values:
+        #     if key_val in key_val_list:
+        #         raise KeyError('Duplicate Keys Supplied (ValueError)')
+        #     else:
+        #         key_val_list.append(key_val)
+
+        # if not ((values is None) and (rand_num_values is None)):
+        #     raise KeyError('Both values and rand_num_values supplied at the same time')
+        # if (values is None) and (rand_num_values is None):
+        #     raise KeyError('None of values and rand_num_values supplied')
 
 
-    # def check_wrong_key(self, values, rand_num_values):
-    #     '''
-    #     Raises key error if both values and rand_num_values are supplued at the
-    #     same time, or if neither is supplied
-    #     '''
-    #     if not ((values is None) and (rand_num_values is None)):
-    #         raise KeyError('Both values and rand_num_values supplied at the same time')
-    #
-    #     if (values is None) and (rand_num_values is None):
-    #         raise KeyError('None of values and rand_num_values supplied')
 
     def sanitize_string_inputs(self):
         if not self.interpolation in INTERPOLATIONTYPE:
