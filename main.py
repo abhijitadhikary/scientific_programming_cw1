@@ -8,7 +8,7 @@ fct1 = PiecewiseLinearFunction(zip(
 ))
 fct2 = PiecewiseLinearFunction(rand_num_values=10)
 
-fct3 = fct1 + fct2
+fct1 += 2
 
 
 

@@ -1,3 +1,7 @@
+'''
+    This module contains a class for using piecewise linear funcitons
+'''
+
 import random
 
 INTERPOLATIONTYPE = ['nearestNeighboor', 'linear']
@@ -10,6 +14,7 @@ class PiecewiseLinearFunction:
     parametrised by a list of points encoded each by a coordinate (1D) and a
     value.
     """
+
     def __init__(self,
                  values=None,
                  rand_num_values=None,
@@ -41,19 +46,13 @@ class PiecewiseLinearFunction:
 
         self._update_params()
 
-    def is_numeric(self, value):
-        '''
-        Tests whether a supplied value is numeric
-        '''
-        return True if isinstance(value, int) or isinstance(value, float) else False
-
-
     def test_input_wrong_type1(self, values):
         '''
         Makes sure all supplied values are numerical
         '''
         for key, value in values:
-            if not (self.is_numeric(key) and self.is_numeric(value)):
+            if not (bool(isinstance(key, (int, float))
+                         and bool(isinstance(value, (int, float))))):
                 raise TypeError('All key and values should be numeric')
 
     def test_input_wrong_type2(self, rand_num_values):
@@ -63,10 +62,6 @@ class PiecewiseLinearFunction:
         if not rand_num_values is None:
             if not isinstance(rand_num_values, int):
                 raise TypeError(f'rand_num_values should be an integer')
-
-
-
-
 
     def check_duplicate_keys(self, values):
         '''
@@ -93,28 +88,15 @@ class PiecewiseLinearFunction:
             else:
                 key_list.append(key)
 
-        # key_val_list = []
-        # for key_val in values:
-        #     if key_val in key_val_list:
-        #         raise KeyError('Duplicate Keys Supplied (ValueError)')
-        #     else:
-        #         key_val_list.append(key_val)
-
-        # if not ((values is None) and (rand_num_values is None)):
-        #     raise KeyError('Both values and rand_num_values supplied at the same time')
-        # if (values is None) and (rand_num_values is None):
-        #     raise KeyError('None of values and rand_num_values supplied')
-
-
-
     def sanitize_string_inputs(self):
+        '''
+        Makes sure the correct type of interpolation method is supplied
+        '''
         if not self.interpolation in INTERPOLATIONTYPE:
             raise ValueError(f'Incorrect interpolation type: `{self.interpolation}`')
 
         if not self.extrapolation in EXTRAPOLATIONTYPE:
             raise ValueError(f'Incorrect extrapolation type: `{self.extrapolation}`')
-
-
 
     def _update_params(self):
         self.num = len(self.inputs)
@@ -258,29 +240,29 @@ class PiecewiseLinearFunction:
             raise TypeError('Unsupported data type')
         return PiecewiseLinearFunction(new_values)
 
-    # def __iadd__(self, other):
-    #     """
-    #     Define the addition operator for two objects of type
-    #      PiecewiseLinearFunction or one PiecewiseLinearFunction and a real
-    #      number using ++=
-    #     :param other: right-hand side argument
-    #     :return: A PiecewiseLinearFunction object
-    #     """
-    #     new_values = dict()
-    #     # Add two functions
-    #     if isinstance(other, PiecewiseLinearFunction):
-    #         for c, v in self.inputs.items():
-    #             new_values[c] = v + other.interp(c)
-    #         for c2, v2 in other:
-    #             if c2 not in new_values.keys():
-    #                 new_values[c2] = self.interp(c2) + v2
-    #     # Add a constant to the left-hand side operand
-    #     elif isinstance(other, (int, float)):
-    #         for c, v in self.inputs.items():
-    #             new_values[c] = v + other
-    #     else:
-    #         raise TypeError('Unsupported data type')
-    #     return PiecewiseLinearFunction(new_values)
+    def __iadd__(self, other):
+        """
+        Define the addition operator for two objects of type
+         PiecewiseLinearFunction or one PiecewiseLinearFunction and a real
+         number using ++=
+        :param other: right-hand side argument
+        :return: A PiecewiseLinearFunction object
+        """
+        new_values = dict()
+        # Add two functions
+        if isinstance(other, PiecewiseLinearFunction):
+            for c, v in self.inputs.items():
+                new_values[c] = v + other.interp(c)
+            for c2, v2 in other:
+                if c2 not in new_values.keys():
+                    new_values[c2] = self.interp(c2) + v2
+        # Add a constant to the left-hand side operand
+        elif isinstance(other, (int, float)):
+            for c, v in self.inputs.items():
+                new_values[c] = v + other
+        else:
+            raise TypeError('Unsupported data type')
+        return PiecewiseLinearFunction(new_values)
 
     def get_lists_sorted_by_coord(self):
         """

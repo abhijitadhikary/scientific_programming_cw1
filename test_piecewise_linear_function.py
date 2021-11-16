@@ -66,6 +66,54 @@ class PiecewiseLinearFunctionInitTest(unittest.TestCase):
         with self.assertRaises(TypeError):
             PiecewiseLinearFunction(rand_num_values='three')
 
+    def test_plus_equal_for_classes(self):
+        '''
+        Tests += where the second object is a PiecewiseLinearFunction
+        '''
+        fct1 = PiecewiseLinearFunction(rand_num_values=10)
+        fct2 = PiecewiseLinearFunction(rand_num_values=10)
+
+        fct3 = fct1 + fct2
+        fct1 += fct2
+
+        assert fct3.inputs == fct1.inputs, 'Implementaiton error of += for objects'
+
+    def test_plus_equal_for_int(self):
+        '''
+        Tests += where the second object is an int
+        '''
+        float_list = [-100, -5, 0, 5, 15000]
+        fct1 = PiecewiseLinearFunction(rand_num_values=10)
+        for fct2 in float_list:
+            fct3 = fct1 + fct2
+            fct1 += fct2
+            assert fct3.inputs == fct1.inputs, f'Implementaiton error of += for int ({fct2})'
+
+
+    def test_plus_equal_for_float(self):
+        '''
+        Tests += where the second object is an int
+        '''
+        # test for a list of different values
+        float_list = [-100.0, -0.005, 0.0, 0.5, 15000.0]
+        fct1 = PiecewiseLinearFunction(rand_num_values=10)
+        for fct2 in float_list:
+            fct3 = fct1 + fct2
+            fct1 += fct2
+            assert fct3.inputs == fct1.inputs, f'Implementaiton error of += for float ({fct2})'
+
+    def test_plus_equal_for_string(self):
+        '''
+        Tests += where the second object is a string
+        '''
+        fct1 = PiecewiseLinearFunction(rand_num_values=10)
+        fct2 = 'c'
+
+        with self.assertRaises(TypeError):
+            fct3 = fct1 + fct2
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
